@@ -3,8 +3,7 @@ Trading Strategies Module
 """
 from abc import ABC, abstractmethod
 import pandas as pd
-import numpy as np
-from typing import Dict, Optional, Tuple
+from typing import Dict
 from loguru import logger
 from src.indicators import TechnicalIndicators
 
@@ -206,8 +205,6 @@ class BreakoutStrategy(Strategy):
             
             # Get latest values
             close = df['close'].iloc[-1]
-            high = df['high'].iloc[-1]
-            low = df['low'].iloc[-1]
             volume = df['volume'].iloc[-1]
             resistance = high_max.iloc[-2]  # Previous period high
             support = low_min.iloc[-2]  # Previous period low
@@ -271,7 +268,6 @@ class MomentumStrategy(Strategy):
             
             # Get latest values
             macd = df['macd'].iloc[-1]
-            macd_signal = df['macd_signal'].iloc[-1]
             macd_diff = df['macd_diff'].iloc[-1]
             macd_diff_prev = df['macd_diff'].iloc[-2]
             close = df['close'].iloc[-1]

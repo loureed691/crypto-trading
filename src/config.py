@@ -72,8 +72,12 @@ class Config:
     
     def validate(self) -> bool:
         """Validate configuration"""
-        if not all([self.api_key, self.api_secret, self.api_passphrase]):
-            raise ValueError("API credentials not set in environment variables")
+        if not all([
+            self.api_key and self.api_key.strip(),
+            self.api_secret and self.api_secret.strip(),
+            self.api_passphrase and self.api_passphrase.strip(),
+        ]):
+            raise ValueError("API credentials not set or are empty/whitespace in environment variables")
         
         if self.risk_per_trade > 0.1:
             raise ValueError("Risk per trade cannot exceed 10%")

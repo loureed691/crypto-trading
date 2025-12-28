@@ -2,9 +2,12 @@
 Risk Management Module
 """
 import pandas as pd
-import numpy as np
 from typing import Dict, Optional
 from loguru import logger
+
+# Volatility thresholds for leverage selection
+VOLATILITY_LOW_THRESHOLD = 0.03  # 3% daily volatility
+VOLATILITY_HIGH_THRESHOLD = 0.07  # 7% daily volatility
 
 class RiskManager:
     """Manages risk for trading operations"""
@@ -101,11 +104,11 @@ class RiskManager:
                 volatility = TechnicalIndicators.calculate_volatility(df)
             
             # Map volatility to leverage
-            if volatility < 0.03:  # Low volatility < 3%
+            if volatility < VOLATILITY_LOW_THRESHOLD:  # Low volatility
                 leverage = self.volatility_leverage_map.get('low', 3)
-            elif volatility < 0.07:  # Medium volatility 3-7%
+            elif volatility < VOLATILITY_HIGH_THRESHOLD:  # Medium volatility
                 leverage = self.volatility_leverage_map.get('medium', 2)
-            else:  # High volatility > 7%
+            else:  # High volatility
                 leverage = self.volatility_leverage_map.get('high', 1)
             
             # Ensure leverage doesn't exceed maximum
@@ -148,9 +151,18 @@ class RiskManager:
         entry = signal.get('entry_price', 0)
         stop_loss = signal.get('stop_loss', 0)
         take_profit = signal.get('take_profit', 0)
+        side = signal.get('side', '')
         
         if entry <= 0 or stop_loss <= 0 or take_profit <= 0:
             result['reason'] = 'Invalid price levels'
+            return result
+        
+        # Validate stop loss placement based on side
+        if side == 'buy' and stop_loss >= entry:
+            result['reason'] = 'Stop loss must be below entry price for buy orders'
+            return result
+        elif side == 'sell' and stop_loss <= entry:
+            result['reason'] = 'Stop loss must be above entry price for sell orders'
             return result
         
         risk = abs(entry - stop_loss) / entry

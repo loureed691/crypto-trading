@@ -2,7 +2,6 @@
 Automated Pair Selection Module
 """
 import pandas as pd
-import numpy as np
 from typing import Dict, List, Tuple
 from loguru import logger
 from src.indicators import TechnicalIndicators
@@ -34,6 +33,10 @@ class PairSelector:
             
             spread = (best_ask - best_bid) / best_bid
             
+            # Check for zero or negative spread
+            if spread <= 0:
+                return 0.0
+            
             # Calculate depth (volume in top 5 levels)
             bid_depth = sum([bid[1] for bid in bids[:5]]) if len(bids) >= 5 else 0
             ask_depth = sum([ask[1] for ask in asks[:5]]) if len(asks) >= 5 else 0
@@ -41,11 +44,8 @@ class PairSelector:
             
             # Liquidity score (inverse of spread, weighted by depth)
             # Lower spread and higher depth = better liquidity
-            if spread > 0:
-                liquidity_score = (1 / spread) * (total_depth / 1000)
-                return min(liquidity_score / 100, 1.0)  # Normalize to 0-1
-            
-            return 0.0
+            liquidity_score = (1 / spread) * (total_depth / 1000)
+            return min(liquidity_score / 100, 1.0)  # Normalize to 0-1
         except Exception as e:
             logger.error(f"Error calculating liquidity score: {e}")
             return 0.0

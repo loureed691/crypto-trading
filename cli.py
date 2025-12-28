@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 # Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent))
 
 from src.bot import TradingBot
 from src.config import Config
@@ -137,7 +137,7 @@ def main():
     run_parser.add_argument('--config', type=str, help='Path to config file')
     
     # Performance command
-    perf_parser = subparsers.add_parser('performance', help='Show performance statistics')
+    subparsers.add_parser('performance', help='Show performance statistics')
     
     # Validate command
     validate_parser = subparsers.add_parser('validate', help='Validate configuration')

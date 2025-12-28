@@ -85,7 +85,9 @@ def test_calculate_position_size_fixed(config):
     size = rm.calculate_position_size(capital, entry_price, stop_loss)
     
     assert size > 0
-    assert size * entry_price <= capital * rm.max_position_risk * 10  # Reasonable bounds
+    # For fixed method, position value should respect max position risk
+    position_value = size * entry_price
+    assert position_value <= capital * rm.max_position_risk or position_value <= rm.max_position_size_usdt
 
 
 def test_calculate_position_size_kelly(config):
@@ -168,7 +170,8 @@ def test_validate_trade_poor_risk_reward(config):
         'confidence': 0.8,
         'entry_price': 100,
         'stop_loss': 95,
-        'take_profit': 102  # Only 1:0.4 risk/reward
+        'take_profit': 102,  # Only 0.4:1 reward:risk ratio
+        'side': 'buy'
     }
     
     result = rm.validate_trade(signal, current_positions=2, portfolio_value=1000, current_risk=0.05)

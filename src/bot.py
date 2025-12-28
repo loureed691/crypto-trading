@@ -71,7 +71,7 @@ class TradingBot:
         """Initialize bot resources"""
         try:
             logger.info("Loading markets...")
-            await self.exchange.load_markets()
+            self.exchange.load_markets()
             
             logger.info("Fetching initial balance...")
             balance = self.exchange.fetch_balance()
@@ -183,12 +183,15 @@ class TradingBot:
             order = self.exchange.create_market_order(symbol, side, position_size)
             
             if order:
+                # Get actual fill price from order
+                actual_entry_price = order.get('average') or order.get('price') or entry_price
+                
                 # Record trade in database
                 trade_data = {
                     'symbol': symbol,
                     'strategy': signal.get('strategy', 'unknown'),
                     'side': side,
-                    'entry_price': entry_price,
+                    'entry_price': actual_entry_price,
                     'size': position_size,
                     'leverage': leverage,
                     'stop_loss': stop_loss,
@@ -204,7 +207,7 @@ class TradingBot:
                     'trade_id': trade.id,
                     'symbol': symbol,
                     'side': side,
-                    'entry_price': entry_price,
+                    'entry_price': actual_entry_price,
                     'size': position_size,
                     'leverage': leverage,
                     'stop_loss': stop_loss,

@@ -111,11 +111,8 @@ class TechnicalIndicators:
         return min(adx_value / 100, 1.0)
     
     @staticmethod
-    def add_all_indicators(df: pd.DataFrame, config: Dict = None) -> pd.DataFrame:
+    def add_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
         """Add all technical indicators"""
-        if config is None:
-            config = {}
-        
         # Trend indicators
         df = TechnicalIndicators.add_ema(df, 12)
         df = TechnicalIndicators.add_ema(df, 26)

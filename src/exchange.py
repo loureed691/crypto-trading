@@ -2,8 +2,7 @@
 KuCoin Exchange API Integration
 """
 import ccxt
-import asyncio
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -18,7 +17,7 @@ class KuCoinAPI:
             'password': api_passphrase,
             'enableRateLimit': True,
             'options': {
-                'defaultType': 'future' if testnet else 'spot',
+                'defaultType': 'spot',  # Default to spot markets
             }
         })
         
@@ -29,7 +28,7 @@ class KuCoinAPI:
         self.balance = None
     
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def load_markets(self):
+    def load_markets(self):
         """Load market information"""
         try:
             self.markets = self.exchange.load_markets()

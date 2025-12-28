@@ -61,8 +61,10 @@ def test_add_rsi(sample_ohlcv):
     df = TechnicalIndicators.add_rsi(df)
     
     assert 'rsi' in df.columns
-    assert (df['rsi'] >= 0).all()
-    assert (df['rsi'] <= 100).all()
+    # RSI has NaN values for the first few rows, exclude them
+    valid_rsi = df['rsi'].dropna()
+    assert (valid_rsi >= 0).all()
+    assert (valid_rsi <= 100).all()
 
 
 def test_add_macd(sample_ohlcv):
@@ -83,8 +85,11 @@ def test_add_bollinger_bands(sample_ohlcv):
     assert 'bb_upper' in df.columns
     assert 'bb_middle' in df.columns
     assert 'bb_lower' in df.columns
-    assert (df['bb_upper'] >= df['bb_middle']).all()
-    assert (df['bb_middle'] >= df['bb_lower']).all()
+    # Use small epsilon for floating point comparison, and exclude NaN values
+    eps = 1e-8
+    valid_mask = ~df['bb_upper'].isna() & ~df['bb_middle'].isna() & ~df['bb_lower'].isna()
+    assert (df.loc[valid_mask, 'bb_upper'] >= df.loc[valid_mask, 'bb_middle'] - eps).all()
+    assert (df.loc[valid_mask, 'bb_middle'] >= df.loc[valid_mask, 'bb_lower'] - eps).all()
 
 
 def test_add_atr(sample_ohlcv):
