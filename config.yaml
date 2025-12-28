@@ -1,0 +1,103 @@
+# Trading Bot Configuration
+
+# General Settings
+general:
+  trading_mode: testnet  # 'testnet' or 'live'
+  check_interval: 60  # seconds between market checks
+  max_concurrent_positions: 5
+  
+# Risk Management
+risk_management:
+  max_portfolio_risk: 0.2  # 20% of capital at risk
+  max_position_risk: 0.02  # 2% per trade
+  max_leverage: 3
+  min_risk_reward_ratio: 2.0
+  trailing_stop: true
+  trailing_stop_percentage: 0.05  # 5%
+
+# Pair Selection Criteria
+pair_selection:
+  min_24h_volume_usdt: 1000000  # $1M minimum volume
+  min_liquidity_score: 0.7
+  max_spread_percentage: 0.5  # 0.5% max spread
+  volatility_range:
+    min: 0.02  # 2% daily volatility
+    max: 0.15  # 15% daily volatility
+  blacklist:
+    - USDT/USDT
+    - BUSD/USDT
+  preferred_quote_currencies:
+    - USDT
+    - USDC
+
+# Strategy Configuration
+strategies:
+  enabled:
+    - trend_following
+    - mean_reversion
+    - breakout
+    - momentum
+  
+  trend_following:
+    ema_fast: 12
+    ema_slow: 26
+    atr_period: 14
+    min_trend_strength: 0.6
+    
+  mean_reversion:
+    bb_period: 20
+    bb_std: 2
+    rsi_period: 14
+    rsi_oversold: 30
+    rsi_overbought: 70
+    
+  breakout:
+    lookback_period: 20
+    volume_surge_threshold: 2.0
+    consolidation_period: 10
+    
+  momentum:
+    macd_fast: 12
+    macd_slow: 26
+    macd_signal: 9
+    momentum_threshold: 0.5
+
+# Position Sizing
+position_sizing:
+  method: kelly_criterion  # 'fixed', 'kelly_criterion', 'volatility_based'
+  kelly_fraction: 0.25  # Conservative Kelly
+  min_position_size_usdt: 10
+  max_position_size_usdt: 1000
+
+# Leverage Selection
+leverage:
+  auto_select: true
+  selection_method: volatility_based
+  volatility_leverage_map:
+    low: 3      # < 3% daily volatility
+    medium: 2   # 3-7% daily volatility
+    high: 1     # > 7% daily volatility
+  max_leverage: 3
+
+# Technical Indicators
+indicators:
+  timeframes:
+    - 1m
+    - 5m
+    - 15m
+    - 1h
+    - 4h
+  primary_timeframe: 15m
+  
+# Performance Monitoring
+monitoring:
+  performance_report_interval: 3600  # 1 hour
+  health_check_interval: 300  # 5 minutes
+  max_drawdown_alert: 0.15  # 15%
+  min_sharpe_ratio: 1.5
+
+# Backtesting
+backtesting:
+  initial_capital: 10000
+  commission: 0.001  # 0.1%
+  slippage: 0.0005  # 0.05%
